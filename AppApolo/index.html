@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>APOLO — Segurança Comunitária</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/design-system.css" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body>
+
+<!-- ========== APP SHELL ========== -->
+<div id="app">
+
+  <!-- ===== SPLASH SCREEN ===== -->
+  <div class="screen active" id="screen-splash">
+    <div class="splash-bg">
+      <div class="splash-logo">
+        <div class="logo-text">
+          <span class="logo-a">AP</span><span class="logo-sun" id="splashSun">
+            <svg viewBox="0 0 48 48" width="48" height="48">
+              <circle cx="24" cy="24" r="10" fill="#FDD835"/>
+              <circle cx="24" cy="24" r="5" fill="transparent" stroke="#FDD835" stroke-width="2"/>
+              <!-- rays -->
+              <line x1="24" y1="4" x2="24" y2="10" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="24" y1="38" x2="24" y2="44" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="4" y1="24" x2="10" y2="24" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="38" y1="24" x2="44" y2="24" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="8.7" y1="8.7" x2="13" y2="13" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="35" y1="35" x2="39.3" y2="39.3" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="39.3" y1="8.7" x2="35" y2="13" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="13" y1="35" x2="8.7" y2="39.3" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </span><span class="logo-lo">LO</span>
+        </div>
+        <p class="splash-tagline">Segurança Comunitária</p>
+      </div>
+      <div class="splash-loader">
+        <div class="splash-progress-bar"><div class="splash-progress-fill" id="splashProgress"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ONBOARDING ===== -->
+  <div class="screen" id="screen-onboarding">
+    <div class="onboarding-container">
+      <div class="onboarding-slides" id="onboardingSlides">
+        <!-- Slide 1 -->
+        <div class="onboarding-slide">
+          <div class="ob-icon ob-icon--blue"><i class="fa-solid fa-shield-halved"></i></div>
+          <h2>Segurança Anônima</h2>
+          <p>Denuncie crimes e situações de risco sem revelar sua identidade. Sua proteção é nossa prioridade.</p>
+        </div>
+        <!-- Slide 2 -->
+        <div class="onboarding-slide">
+          <div class="ob-icon ob-icon--yellow"><i class="fa-solid fa-map-location-dot"></i></div>
+          <h2>Mapa em Tempo Real</h2>
+          <p>Veja as zonas de risco ao seu redor e tome decisões mais seguras no seu trajeto diário.</p>
+        </div>
+        <!-- Slide 3 -->
+        <div class="onboarding-slide">
+          <div class="ob-icon ob-icon--red"><i class="fa-solid fa-siren-on"></i></div>
+          <h2>Emergência Imediata</h2>
+          <p>Um botão de emergência conecta você rapidamente aos serviços de socorro da sua cidade.</p>
+        </div>
+      </div>
+      <div class="ob-dots" id="obDots">
+        <span class="ob-dot active" data-index="0"></span>
+        <span class="ob-dot" data-index="1"></span>
+        <span class="ob-dot" data-index="2"></span>
+      </div>
+      <div class="ob-actions">
+        <button class="btn btn--ghost" id="btnObSkip">Pular</button>
+        <button class="btn btn--primary" id="btnObNext">Próximo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== LOGIN ===== -->
+  <div class="screen" id="screen-login">
+    <div class="auth-container">
+      <div class="auth-logo">
+        <div class="logo-text logo-text--sm">
+          <span class="logo-a">AP</span><span class="logo-sun logo-sun--sm">
+            <svg viewBox="0 0 48 48" width="32" height="32">
+              <circle cx="24" cy="24" r="10" fill="#FDD835"/>
+              <circle cx="24" cy="24" r="5" fill="transparent" stroke="#FDD835" stroke-width="2"/>
+              <line x1="24" y1="4" x2="24" y2="10" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="24" y1="38" x2="24" y2="44" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="4" y1="24" x2="10" y2="24" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="38" y1="24" x2="44" y2="24" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="8.7" y1="8.7" x2="13" y2="13" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="35" y1="35" x2="39.3" y2="39.3" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="39.3" y1="8.7" x2="35" y2="13" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+              <line x1="13" y1="35" x2="8.7" y2="39.3" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+            </svg>
+          </span><span class="logo-lo">LO</span>
+        </div>
+        <p class="auth-subtitle">Faça login para continuar</p>
+      </div>
+      <div class="form-group">
+        <label class="form-label">CPF ou E-mail</label>
+        <input class="form-input" type="text" placeholder="Digite seu CPF ou e-mail" id="loginEmail" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <div class="input-wrapper">
+          <input class="form-input" type="password" placeholder="Digite sua senha" id="loginPassword" />
+          <button class="input-toggle" onclick="togglePassword('loginPassword', this)"><i class="fa-regular fa-eye"></i></button>
+        </div>
+      </div>
+      <button class="btn btn--primary btn--full" onclick="navigate('home')">Entrar</button>
+      <div class="auth-divider"><span>ou</span></div>
+      <button class="btn btn--outline btn--full" onclick="navigate('home')"><i class="fa-solid fa-user-secret"></i> Entrar Anonimamente</button>
+      <p class="auth-link">Não tem conta? <a href="#" onclick="navigate('register')">Cadastre-se</a></p>
+    </div>
+  </div>
+
+  <!-- ===== CADASTRO ===== -->
+  <div class="screen" id="screen-register">
+    <div class="screen-header">
+      <button class="btn-icon" onclick="navigate('login')"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 class="screen-title">Criar Conta</h2>
+      <div style="width:40px"></div>
+    </div>
+    <div class="auth-container auth-container--nologo">
+      <div class="form-group">
+        <label class="form-label">Nome completo</label>
+        <input class="form-input" type="text" placeholder="Seu nome completo" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">CPF</label>
+        <input class="form-input" type="text" placeholder="000.000.000-00" id="cpfInput" oninput="maskCPF(this)" maxlength="14" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">E-mail</label>
+        <input class="form-input" type="email" placeholder="seu@email.com" />
+      </div>
+      <div class="form-group">
+        <label class="form-label">Senha</label>
+        <div class="input-wrapper">
+          <input class="form-input" type="password" placeholder="Mínimo 8 caracteres" id="regPassword" oninput="checkPasswordStrength(this)" />
+          <button class="input-toggle" onclick="togglePassword('regPassword', this)"><i class="fa-regular fa-eye"></i></button>
+        </div>
+        <div class="password-strength" id="passwordStrength">
+          <div class="strength-bar"><div class="strength-fill" id="strengthFill"></div></div>
+          <span class="strength-label" id="strengthLabel">Força da senha</span>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmar Senha</label>
+        <input class="form-input" type="password" placeholder="Confirme sua senha" />
+      </div>
+      <div class="form-check">
+        <input type="checkbox" id="termsCheck" />
+        <label for="termsCheck">Aceito os <a href="#">Termos de Uso</a> e <a href="#">Política de Privacidade</a></label>
+      </div>
+      <button class="btn btn--primary btn--full" onclick="navigate('home')">Criar Conta</button>
+    </div>
+  </div>
+
+  <!-- ===== HOME / MAPA ===== -->
+  <div class="screen" id="screen-home">
+    <!-- Top Bar -->
+    <div class="map-topbar">
+      <button class="btn-icon btn-icon--light" id="btnMenu" onclick="openOverlay('menu-overlay')">
+        <i class="fa-solid fa-bars"></i>
+      </button>
+      <div class="map-search" onclick="openOverlay('search-overlay')">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <span>Pesquisar endereço...</span>
+      </div>
+      <button class="btn-icon btn-icon--light" onclick="navigate('notifications')">
+        <i class="fa-solid fa-bell"></i>
+        <span class="badge">3</span>
+      </button>
+    </div>
+
+    <!-- Map -->
+    <div id="map"></div>
+
+    <!-- Risk legend chips -->
+    <div class="risk-chips" id="riskChips">
+      <span class="chip chip--green" onclick="filterRisk('safe')"><span class="chip-dot"></span>Seguro</span>
+      <span class="chip chip--yellow" onclick="filterRisk('attention')"><span class="chip-dot"></span>Atenção</span>
+      <span class="chip chip--orange" onclick="filterRisk('moderate')"><span class="chip-dot"></span>Moderado</span>
+      <span class="chip chip--red" onclick="filterRisk('high')"><span class="chip-dot"></span>Alto Risco</span>
+    </div>
+
+    <!-- FABs -->
+    <div class="fab-container">
+      <button class="fab fab--report" onclick="navigate('report')" aria-label="Denunciar">
+        <i class="fa-solid fa-bullhorn"></i>
+      </button>
+      <button class="fab fab--emergency" id="emergencyFab" aria-label="Emergência"
+        onmousedown="startEmergencyHold(event)" ontouchstart="startEmergencyHold(event)"
+        onmouseup="cancelEmergencyHold()" ontouchend="cancelEmergencyHold()"
+        onmouseleave="cancelEmergencyHold()">
+        <svg class="emergency-ring" viewBox="0 0 56 56">
+          <circle class="ring-bg" cx="28" cy="28" r="25"/>
+          <circle class="ring-progress" id="emergencyRing" cx="28" cy="28" r="25"/>
+        </svg>
+        <i class="fa-solid fa-siren-on"></i>
+      </button>
+    </div>
+
+    <!-- Bottom area info strip -->
+    <div class="map-bottom-strip">
+      <div class="strip-item">
+        <i class="fa-solid fa-triangle-exclamation" style="color:var(--yellow)"></i>
+        <span>12 ocorrências próximas</span>
+      </div>
+      <button class="strip-action" onclick="navigate('reports-list')">Ver todas</button>
+    </div>
+  </div>
+
+  <!-- ===== LISTA DE OCORRÊNCIAS ===== -->
+  <div class="screen" id="screen-reports-list">
+    <div class="screen-header">
+      <button class="btn-icon" onclick="navigate('home')"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 class="screen-title">Ocorrências</h2>
+      <button class="btn-icon" onclick="openOverlay('filter-overlay')"><i class="fa-solid fa-sliders"></i></button>
+    </div>
+    <div class="tabs" id="reportsTabs">
+      <button class="tab active" data-tab="all" onclick="switchTab(this, 'all')">Todas</button>
+      <button class="tab" data-tab="near" onclick="switchTab(this, 'near')">Próximas</button>
+      <button class="tab" data-tab="recent" onclick="switchTab(this, 'recent')">Recentes</button>
+    </div>
+    <div class="list-container" id="reportsList">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- ===== DETALHE DA OCORRÊNCIA ===== -->
+  <div class="screen" id="screen-report-detail">
+    <div class="screen-header">
+      <button class="btn-icon" onclick="navigate('reports-list')"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 class="screen-title">Detalhe</h2>
+      <button class="btn-icon" onclick="shareReport()"><i class="fa-solid fa-share-nodes"></i></button>
+    </div>
+    <div class="detail-container" id="detailContainer">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- ===== DENÚNCIA ===== -->
+  <div class="screen" id="screen-report">
+    <div class="screen-header">
+      <button class="btn-icon" onclick="navigate('home')"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 class="screen-title">Nova Denúncia</h2>
+      <div style="width:40px"></div>
+    </div>
+    <!-- Steps indicator -->
+    <div class="steps-bar">
+      <div class="step active" data-step="1"><span>1</span><label>Tipo</label></div>
+      <div class="step-line"></div>
+      <div class="step" data-step="2"><span>2</span><label>Detalhe</label></div>
+      <div class="step-line"></div>
+      <div class="step" data-step="3"><span>3</span><label>Enviar</label></div>
+    </div>
+
+    <!-- Step 1 -->
+    <div class="report-step active" id="reportStep1">
+      <p class="step-instruction">Selecione o tipo de ocorrência:</p>
+      <div class="incident-grid">
+        <button class="incident-card" onclick="selectIncident(this, 'Roubo/Furto')">
+          <i class="fa-solid fa-masks-theater"></i><span>Roubo/Furto</span>
+        </button>
+        <button class="incident-card" onclick="selectIncident(this, 'Tráfico')">
+          <i class="fa-solid fa-skull-crossbones"></i><span>Tráfico</span>
+        </button>
+        <button class="incident-card" onclick="selectIncident(this, 'Acidente')">
+          <i class="fa-solid fa-car-burst"></i><span>Acidente</span>
+        </button>
+        <button class="incident-card" onclick="selectIncident(this, 'Iluminação')">
+          <i class="fa-solid fa-lightbulb-slash"></i><span>Apagão/Iluminação</span>
+        </button>
+        <button class="incident-card" onclick="selectIncident(this, 'Via Perigosa')">
+          <i class="fa-solid fa-road-barrier"></i><span>Via Perigosa</span>
+        </button>
+        <button class="incident-card" onclick="selectIncident(this, 'Violência')">
+          <i class="fa-solid fa-hand-fist"></i><span>Violência</span>
+        </button>
+        <button class="incident-card" onclick="selectIncident(this, 'Suspeito')">
+          <i class="fa-solid fa-user-secret"></i><span>Suspeito</span>
+        </button>
+        <button class="incident-card" onclick="selectIncident(this, 'Outro')">
+          <i class="fa-solid fa-circle-exclamation"></i><span>Outro</span>
+        </button>
+      </div>
+      <div class="step-actions">
+        <button class="btn btn--primary btn--full" id="btnStep1Next" onclick="goToStep(2)" disabled>Próximo</button>
+      </div>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="report-step" id="reportStep2">
+      <div class="form-group">
+        <label class="form-label">Nível de risco</label>
+        <div class="risk-selector">
+          <button class="risk-btn risk-btn--green active" data-risk="Baixo" onclick="selectRisk(this)">Baixo</button>
+          <button class="risk-btn risk-btn--yellow" data-risk="Médio" onclick="selectRisk(this)">Médio</button>
+          <button class="risk-btn risk-btn--orange" data-risk="Alto" onclick="selectRisk(this)">Alto</button>
+          <button class="risk-btn risk-btn--red" data-risk="Crítico" onclick="selectRisk(this)">Crítico</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Descrição</label>
+        <textarea class="form-input form-textarea" placeholder="Descreva o que está acontecendo..." rows="4"></textarea>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Localização</label>
+        <div class="location-picker" onclick="openOverlay('location-overlay')">
+          <i class="fa-solid fa-location-dot"></i>
+          <span id="reportLocation">Usar localização atual</span>
+          <i class="fa-solid fa-chevron-right" style="margin-left:auto"></i>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Fotos / Vídeos (opcional)</label>
+        <div class="media-upload" onclick="triggerMediaUpload()">
+          <i class="fa-solid fa-camera"></i>
+          <span>Adicionar mídia</span>
+          <small>JPG, PNG, MP4 até 50MB</small>
+        </div>
+        <div class="media-preview" id="mediaPreview"></div>
+      </div>
+      <div class="step-actions">
+        <button class="btn btn--ghost" onclick="goToStep(1)">Voltar</button>
+        <button class="btn btn--primary" onclick="goToStep(3)">Próximo</button>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="report-step" id="reportStep3">
+      <div class="report-summary" id="reportSummary">
+        <!-- populated by JS -->
+      </div>
+      <div class="anon-notice">
+        <i class="fa-solid fa-user-secret"></i>
+        <p>Sua identidade está protegida. Esta denúncia será enviada de forma 100% anônima.</p>
+      </div>
+      <div class="witness-section">
+        <p class="step-instruction">Você testemunhou diretamente o fato?</p>
+        <div class="witness-btns">
+          <button class="btn btn--outline witness-btn" id="witnessYes" onclick="setWitness(true)"><i class="fa-solid fa-check"></i> Sim, testemunhei</button>
+          <button class="btn btn--ghost witness-btn" id="witnessNo" onclick="setWitness(false)"><i class="fa-solid fa-xmark"></i> Não testemunhei</button>
+        </div>
+      </div>
+      <div class="step-actions">
+        <button class="btn btn--ghost" onclick="goToStep(2)">Voltar</button>
+        <button class="btn btn--primary" onclick="submitReport()">Enviar Denúncia</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== EMERGÊNCIA ===== -->
+  <div class="screen" id="screen-emergency">
+    <div class="screen-header">
+      <button class="btn-icon" onclick="navigate('home')"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 class="screen-title">Emergência</h2>
+      <div style="width:40px"></div>
+    </div>
+    <div class="emergency-container" id="emergencyContainer">
+      <div class="emergency-idle" id="emergencyIdle">
+        <div class="emergency-icon-big">
+          <i class="fa-solid fa-siren-on"></i>
+        </div>
+        <h2>Acionar Emergência</h2>
+        <p>Pressione e segure o botão abaixo por 3 segundos para acionar os serviços de emergência.</p>
+        <div class="emergency-hold-area">
+          <button class="btn-emergency-hold"
+            onmousedown="startEmergencyScreen(event)" ontouchstart="startEmergencyScreen(event)"
+            onmouseup="cancelEmergencyScreen()" ontouchend="cancelEmergencyScreen()"
+            onmouseleave="cancelEmergencyScreen()">
+            <svg class="e-ring" viewBox="0 0 120 120">
+              <circle class="e-ring-bg" cx="60" cy="60" r="52"/>
+              <circle class="e-ring-prog" id="eRingProg" cx="60" cy="60" r="52"/>
+            </svg>
+            <div class="e-btn-inner">
+              <i class="fa-solid fa-siren-on"></i>
+              <small>Segure</small>
+            </div>
+          </button>
+        </div>
+        <div class="emergency-contacts">
+          <a href="tel:190" class="emergency-contact">
+            <div class="ec-icon" style="background:#1E88E5"><i class="fa-solid fa-shield"></i></div>
+            <span>Polícia<br><strong>190</strong></span>
+          </a>
+          <a href="tel:192" class="emergency-contact">
+            <div class="ec-icon" style="background:#E53935"><i class="fa-solid fa-truck-medical"></i></div>
+            <span>SAMU<br><strong>192</strong></span>
+          </a>
+          <a href="tel:193" class="emergency-contact">
+            <div class="ec-icon" style="background:#FB8C00"><i class="fa-solid fa-fire-extinguisher"></i></div>
+            <span>Bombeiros<br><strong>193</strong></span>
+          </a>
+        </div>
+      </div>
+      <div class="emergency-active" id="emergencyActive" style="display:none">
+        <div class="ea-pulse"><i class="fa-solid fa-siren-on"></i></div>
+        <h2>Emergência Acionada!</h2>
+        <p>Serviços de emergência notificados. Aguarde.</p>
+        <div class="ea-protocol">
+          <span>Protocolo</span>
+          <strong id="eaProtocol">#APL-000000</strong>
+        </div>
+        <button class="btn btn--ghost btn--full" onclick="cancelEmergencyActive()">Cancelar Emergência</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== NOTIFICAÇÕES ===== -->
+  <div class="screen" id="screen-notifications">
+    <div class="screen-header">
+      <button class="btn-icon" onclick="navigate('home')"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 class="screen-title">Notificações</h2>
+      <button class="btn-icon" onclick="markAllRead()"><i class="fa-solid fa-check-double"></i></button>
+    </div>
+    <div class="list-container" id="notificationsList">
+      <!-- populated by JS -->
+    </div>
+  </div>
+
+  <!-- ===== PERFIL ===== -->
+  <div class="screen" id="screen-profile">
+    <div class="screen-header">
+      <button class="btn-icon" onclick="navigate('home')"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 class="screen-title">Meu Perfil</h2>
+      <button class="btn-icon" onclick="navigate('settings')"><i class="fa-solid fa-gear"></i></button>
+    </div>
+    <div class="profile-container">
+      <div class="profile-avatar">
+        <div class="avatar-circle"><i class="fa-solid fa-user"></i></div>
+        <button class="avatar-edit"><i class="fa-solid fa-camera"></i></button>
+      </div>
+      <h3 class="profile-name">Usuário Anônimo</h3>
+      <p class="profile-member">Membro desde Jan 2025</p>
+      <div class="profile-stats">
+        <div class="stat-card"><span class="stat-num">7</span><span class="stat-label">Denúncias</span></div>
+        <div class="stat-card"><span class="stat-num">3</span><span class="stat-label">Validações</span></div>
+        <div class="stat-card"><span class="stat-num">12</span><span class="stat-label">Alertas</span></div>
+      </div>
+      <div class="profile-menu">
+        <button class="profile-menu-item" onclick="navigate('reports-list')">
+          <i class="fa-solid fa-list"></i><span>Minhas Denúncias</span><i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <button class="profile-menu-item" onclick="navigate('settings')">
+          <i class="fa-solid fa-gear"></i><span>Configurações</span><i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <button class="profile-menu-item" onclick="navigate('help')">
+          <i class="fa-solid fa-circle-question"></i><span>Ajuda</span><i class="fa-solid fa-chevron-right"></i>
+        </button>
+        <button class="profile-menu-item profile-menu-item--danger" onclick="confirmLogout()">
+          <i class="fa-solid fa-right-from-bracket"></i><span>Encerrar Sessão</span><i class="fa-solid fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== CONFIGURAÇÕES ===== -->
+  <div class="screen" id="screen-settings">
+    <div class="screen-header">
+      <button class="btn-icon" onclick="navigate('profile')"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 class="screen-title">Configurações</h2>
+      <div style="width:40px"></div>
+    </div>
+    <div class="settings-container">
+      <div class="settings-section">
+        <h4 class="settings-label">Notificações</h4>
+        <div class="settings-item">
+          <span>Alertas de área</span>
+          <label class="toggle"><input type="checkbox" checked /><span class="toggle-track"></span></label>
+        </div>
+        <div class="settings-item">
+          <span>Denúncias próximas</span>
+          <label class="toggle"><input type="checkbox" checked /><span class="toggle-track"></span></label>
+        </div>
+        <div class="settings-item">
+          <span>Atualizações de status</span>
+          <label class="toggle"><input type="checkbox" /><span class="toggle-track"></span></label>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h4 class="settings-label">Privacidade</h4>
+        <div class="settings-item">
+          <span>Modo Anônimo</span>
+          <label class="toggle"><input type="checkbox" checked /><span class="toggle-track"></span></label>
+        </div>
+        <div class="settings-item">
+          <span>Compartilhar localização</span>
+          <label class="toggle"><input type="checkbox" checked /><span class="toggle-track"></span></label>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h4 class="settings-label">Aparência</h4>
+        <div class="settings-item">
+          <span>Modo Escuro</span>
+          <label class="toggle"><input type="checkbox" id="darkModeToggle" onchange="toggleDarkMode(this)" /><span class="toggle-track"></span></label>
+        </div>
+      </div>
+      <div class="settings-section">
+        <h4 class="settings-label">Acessibilidade</h4>
+        <div class="settings-item">
+          <span>Texto grande</span>
+          <label class="toggle"><input type="checkbox" /><span class="toggle-track"></span></label>
+        </div>
+        <div class="settings-item">
+          <span>Alto contraste</span>
+          <label class="toggle"><input type="checkbox" /><span class="toggle-track"></span></label>
+        </div>
+        <div class="settings-item">
+          <span>Leitura de voz</span>
+          <label class="toggle"><input type="checkbox" /><span class="toggle-track"></span></label>
+        </div>
+      </div>
+      <div class="settings-version">Versão 1.0.0 — APOLO Segurança Comunitária</div>
+    </div>
+  </div>
+
+  <!-- ===== AJUDA ===== -->
+  <div class="screen" id="screen-help">
+    <div class="screen-header">
+      <button class="btn-icon" onclick="navigate('profile')"><i class="fa-solid fa-arrow-left"></i></button>
+      <h2 class="screen-title">Ajuda</h2>
+      <div style="width:40px"></div>
+    </div>
+    <div class="help-container">
+      <div class="help-search">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="text" placeholder="Buscar na ajuda..." class="help-search-input" />
+      </div>
+      <div class="faq-list" id="faqList">
+        <!-- populated by JS -->
+      </div>
+      <div class="help-support">
+        <h4>Precisa de mais ajuda?</h4>
+        <button class="btn btn--outline btn--full" onclick="openOverlay('contact-overlay')"><i class="fa-solid fa-envelope"></i> Falar com suporte</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TELA SUCCESS ===== -->
+  <div class="screen" id="screen-success">
+    <div class="success-container">
+      <div class="success-icon"><i class="fa-solid fa-circle-check"></i></div>
+      <h2 id="successTitle">Denúncia Enviada!</h2>
+      <p id="successMessage">Sua denúncia foi recebida e está em análise.</p>
+      <div class="protocol-box">
+        <span>Protocolo</span>
+        <strong id="successProtocol">#APL-123456</strong>
+      </div>
+      <p class="success-note">Guarde este número para acompanhar o status da sua denúncia.</p>
+      <button class="btn btn--primary btn--full" onclick="navigate('home')">Voltar ao início</button>
+      <button class="btn btn--ghost btn--full" onclick="navigate('reports-list')">Ver ocorrências</button>
+    </div>
+  </div>
+
+</div><!-- end #app -->
+
+<!-- ============================================================ -->
+<!-- OVERLAYS (ficam fora do #app mas dentro do body)            -->
+<!-- ============================================================ -->
+
+<!-- OVERLAY BACKDROP -->
+<div class="overlay-backdrop" id="overlayBackdrop" onclick="closeAllOverlays()"></div>
+
+<!-- ===== MENU LATERAL ===== -->
+<div class="side-menu" id="menu-overlay" role="dialog" aria-modal="true" aria-label="Menu principal">
+  <div class="side-menu-header">
+    <div class="logo-text logo-text--sm">
+      <span class="logo-a">AP</span><span class="logo-sun logo-sun--sm">
+        <svg viewBox="0 0 48 48" width="28" height="28">
+          <circle cx="24" cy="24" r="10" fill="#FDD835"/>
+          <line x1="24" y1="4" x2="24" y2="10" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+          <line x1="24" y1="38" x2="24" y2="44" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+          <line x1="4" y1="24" x2="10" y2="24" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+          <line x1="38" y1="24" x2="44" y2="24" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+          <line x1="8.7" y1="8.7" x2="13" y2="13" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+          <line x1="35" y1="35" x2="39.3" y2="39.3" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+          <line x1="39.3" y1="8.7" x2="35" y2="13" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+          <line x1="13" y1="35" x2="8.7" y2="39.3" stroke="#FDD835" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+      </span><span class="logo-lo">LO</span>
+    </div>
+    <!-- BOTÃO X — FUNCIONANDO CORRETAMENTE -->
+    <button class="side-menu-close" id="btnMenuClose" onclick="closeOverlay('menu-overlay')" aria-label="Fechar menu" type="button">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+  </div>
+  <div class="side-menu-user">
+    <div class="avatar-circle avatar-circle--sm"><i class="fa-solid fa-user-secret"></i></div>
+    <div>
+      <p class="smu-name">Usuário Anônimo</p>
+      <p class="smu-status"><span class="status-dot status-dot--green"></span>Anônimo ativo</p>
+    </div>
+  </div>
+  <nav class="side-menu-nav">
+    <button class="smn-item" onclick="menuNavigate('home')">
+      <i class="fa-solid fa-map-location-dot"></i><span>Mapa</span>
+    </button>
+    <button class="smn-item" onclick="menuNavigate('reports-list')">
+      <i class="fa-solid fa-list-ul"></i><span>Ocorrências</span>
+    </button>
+    <button class="smn-item" onclick="menuNavigate('report')">
+      <i class="fa-solid fa-bullhorn"></i><span>Nova Denúncia</span>
+    </button>
+    <button class="smn-item" onclick="menuNavigate('emergency')">
+      <i class="fa-solid fa-siren-on"></i><span>Emergência</span>
+    </button>
+    <button class="smn-item" onclick="menuNavigate('notifications')">
+      <i class="fa-solid fa-bell"></i><span>Notificações <span class="badge badge--sm">3</span></span>
+    </button>
+    <div class="smn-divider"></div>
+    <button class="smn-item" onclick="menuNavigate('profile')">
+      <i class="fa-solid fa-user"></i><span>Meu Perfil</span>
+    </button>
+    <button class="smn-item" onclick="menuNavigate('settings')">
+      <i class="fa-solid fa-gear"></i><span>Configurações</span>
+    </button>
+    <button class="smn-item" onclick="menuNavigate('help')">
+      <i class="fa-solid fa-circle-question"></i><span>Ajuda</span>
+    </button>
+    <div class="smn-divider"></div>
+    <button class="smn-item smn-item--danger" onclick="confirmLogout()">
+      <i class="fa-solid fa-right-from-bracket"></i><span>Encerrar Sessão</span>
+    </button>
+  </nav>
+</div>
+
+<!-- ===== SEARCH OVERLAY ===== -->
+<div class="bottom-sheet" id="search-overlay" role="dialog" aria-modal="true">
+  <div class="bs-handle"></div>
+  <div class="bs-header">
+    <h3>Pesquisar</h3>
+    <button class="btn-icon" onclick="closeOverlay('search-overlay')" type="button"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="bs-content">
+    <div class="bs-search-input">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" placeholder="Endereço, bairro ou referência..." autofocus />
+    </div>
+    <h4 class="bs-section-title">Pesquisas recentes</h4>
+    <div class="search-recent">
+      <button class="search-recent-item" onclick="closeOverlay('search-overlay')"><i class="fa-solid fa-clock-rotate-left"></i> Av. Paulista, 1000</button>
+      <button class="search-recent-item" onclick="closeOverlay('search-overlay')"><i class="fa-solid fa-clock-rotate-left"></i> Rua da Consolação</button>
+      <button class="search-recent-item" onclick="closeOverlay('search-overlay')"><i class="fa-solid fa-clock-rotate-left"></i> Centro — SP</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== FILTER OVERLAY ===== -->
+<div class="bottom-sheet" id="filter-overlay" role="dialog" aria-modal="true">
+  <div class="bs-handle"></div>
+  <div class="bs-header">
+    <h3>Filtrar</h3>
+    <button class="btn-icon" onclick="closeOverlay('filter-overlay')" type="button"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="bs-content">
+    <h4 class="bs-section-title">Tipo de ocorrência</h4>
+    <div class="filter-chips">
+      <span class="chip chip--blue active">Todos</span>
+      <span class="chip">Roubo</span>
+      <span class="chip">Acidente</span>
+      <span class="chip">Tráfico</span>
+      <span class="chip">Via Perigosa</span>
+    </div>
+    <h4 class="bs-section-title">Período</h4>
+    <div class="filter-chips">
+      <span class="chip chip--blue active">Hoje</span>
+      <span class="chip">Esta semana</span>
+      <span class="chip">Este mês</span>
+    </div>
+    <button class="btn btn--primary btn--full" onclick="applyFilter()">Aplicar Filtros</button>
+  </div>
+</div>
+
+<!-- ===== LOCATION OVERLAY ===== -->
+<div class="bottom-sheet" id="location-overlay" role="dialog" aria-modal="true">
+  <div class="bs-handle"></div>
+  <div class="bs-header">
+    <h3>Localização</h3>
+    <button class="btn-icon" onclick="closeOverlay('location-overlay')" type="button"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="bs-content">
+    <button class="location-option" onclick="setLocation('current')">
+      <i class="fa-solid fa-location-crosshairs" style="color:var(--blue)"></i>
+      <span>Usar minha localização atual</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+    <button class="location-option" onclick="setLocation('manual')">
+      <i class="fa-solid fa-map-pin" style="color:var(--yellow)"></i>
+      <span>Inserir endereço manualmente</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+    <button class="location-option" onclick="setLocation('map')">
+      <i class="fa-solid fa-map" style="color:var(--green)"></i>
+      <span>Marcar no mapa</span>
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+</div>
+
+<!-- ===== CONTACT OVERLAY ===== -->
+<div class="bottom-sheet" id="contact-overlay" role="dialog" aria-modal="true">
+  <div class="bs-handle"></div>
+  <div class="bs-header">
+    <h3>Falar com Suporte</h3>
+    <button class="btn-icon" onclick="closeOverlay('contact-overlay')" type="button"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="bs-content">
+    <div class="form-group">
+      <label class="form-label">Assunto</label>
+      <input class="form-input" type="text" placeholder="Descreva brevemente" />
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mensagem</label>
+      <textarea class="form-input form-textarea" rows="4" placeholder="Como podemos ajudar?"></textarea>
+    </div>
+    <button class="btn btn--primary btn--full" onclick="closeOverlay('contact-overlay')">Enviar</button>
+  </div>
+</div>
+
+<!-- ===== MAP ZONE DETAIL ===== -->
+<div class="bottom-sheet" id="zone-overlay" role="dialog" aria-modal="true">
+  <div class="bs-handle"></div>
+  <div class="bs-header">
+    <h3 id="zoneTitle">Área de Risco</h3>
+    <button class="btn-icon" onclick="closeOverlay('zone-overlay')" type="button"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="bs-content" id="zoneContent">
+    <!-- populated by JS -->
+  </div>
+</div>
+
+<!-- ===== MODAL CONFIRMAÇÃO ===== -->
+<div class="modal-overlay" id="confirm-modal" onclick="closeModal('confirm-modal')">
+  <div class="modal" onclick="event.stopPropagation()">
+    <h3 id="confirmTitle">Confirmar</h3>
+    <p id="confirmMessage">Tem certeza?</p>
+    <div class="modal-actions">
+      <button class="btn btn--ghost" onclick="closeModal('confirm-modal')">Cancelar</button>
+      <button class="btn btn--primary" id="confirmOkBtn">Confirmar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div class="toast" id="toast"><i class="toast-icon fa-solid fa-check-circle"></i><span id="toastMsg"></span></div>
+
+<!-- SCRIPTS -->
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="js/navigation.js"></script>
+<script src="js/app.js"></script>
+
+</body>
+</html>
